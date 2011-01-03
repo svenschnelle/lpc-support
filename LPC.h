@@ -20,10 +20,14 @@ const char *busstates[] = {
         "BUS_STATE_IDSEL",
         "BUS_STATE_CT_DIR",
         "BUS_STATE_ADDR",
-        "BUS_STATE_TAR",
+        "BUS_STATE_TAR1",
+        "BUS_STATE_TAR2",
+        "BUS_STATE_TAR3",
         "BUS_STATE_SIZE",
-        "BUS_STATE_SYNC",
-        "BUS_STATE_DATA",
+        "BUS_STATE_SYNC1",
+        "BUS_STATE_SYNC2",
+        "BUS_STATE_DATA_READ",
+        "BUS_STATE_DATA_WRITE",
         "BUS_STATE_MSIZE",
         "BUS_STATE_ABORT",
 };
@@ -34,10 +38,14 @@ typedef enum {
         BUS_STATE_IDSEL,
         BUS_STATE_CT_DIR,
         BUS_STATE_ADDR,
-        BUS_STATE_TAR,
+        BUS_STATE_TAR1,
+        BUS_STATE_TAR2,
+        BUS_STATE_TAR3,
         BUS_STATE_SIZE,
-        BUS_STATE_SYNC,
-        BUS_STATE_DATA,
+        BUS_STATE_SYNC1,
+        BUS_STATE_SYNC2,
+        BUS_STATE_DATA_READ,
+        BUS_STATE_DATA_WRITE,
         BUS_STATE_MSIZE,
         BUS_STATE_ABORT,
 } bus_state_t;
@@ -211,13 +219,6 @@ enum MODEINFO {
 	MODEINFO_GETNAME=4,
 	MODEINFO_MAX,
 };
-typedef enum {
-        DISPLAY_ATTRIBUTE_HARDWARE=1,
-        DISPLAY_ATTRIBUTE_SOFTWARE=2,
-        DISPLAY_ATTRIBUTE_CONTROL_FLOW=4,
-        DISPLAY_ATTRIBUTE_SUBROUTINE=8,
-        DISPLAY_ATTRIBUTE_SPECIAL=15
-} display_attribute_t;
 
 typedef enum {
         GROUP_TYPE_INPUT = 0,

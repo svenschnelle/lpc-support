@@ -1,5 +1,6 @@
 PATTERN	BIN BIN
-IO_Read  00000000
-IO_Write 00000001
-FW_Read  00001101
-FW_Write 00001110
+IO_Read  00000000 @green
+IO_Write 00000001 @red
+FW_Read  00001101 @green
+FW_Write 00001110 @red
+Abort    00001111 @white @red

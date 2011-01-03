@@ -31,6 +31,12 @@ typedef enum {
         CYCLE_FW_WRITE,
 } cycle_type_t;
 
+typedef enum {
+        DISPLAY_ATTRIBUTE_ALL=1,
+        DISPLAY_ATTRIBUTE_DECODED,
+        DISPLAY_ATTRIBUTE_ABORTED
+} display_attribute_t;
+
 static FILE *logfile = NULL;
 static int idsel_values[16] = { 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -88,9 +94,9 @@ struct modeinfo modeinfo[] = { /*{ "Show unknown cycles", onoff, 1, 0 },
                                { "Testmenu3", onoff, 1, 0 },
                                { "Testmenu4", onoff, 1, 0 }*/ };
 
-struct stringmodevalues stringmodevalues[4] = { { "All cycles", 1 },
-                                                { "Decoded cycles", 2 },
-                                                { "Aborted cycles", 3 } };
+struct stringmodevalues stringmodevalues[] = { { "All cycles", DISPLAY_ATTRIBUTE_ALL },
+                                                { "Decoded cycles", DISPLAY_ATTRIBUTE_DECODED },
+                                                { "Aborted cycles", DISPLAY_ATTRIBUTE_ABORTED } };
 
 struct stringmodename stringmodename = { ARRAY_SIZE(stringmodevalues), "Show:", stringmodevalues, NULL };
 
@@ -104,7 +110,7 @@ static void LogDebug(struct pctx *pctx, int level, const char *fmt, ...)
         if (!logfile)
                 return;
 
-        if (level >= 9)
+        if (level >= 8)
                 return;
 
 	va_list ap;
@@ -151,7 +157,7 @@ static struct sequence *make_lpc_sequence(struct pctx *pctx)
 
         sprintf(seqinfo->textp, "%s", pctx->lpc_start ?  lpc_start[pctx->lpc_start] : lpc_cycletypes[pctx->lpc_cycletype]);
 
-        seqinfo->flags = DISPLAY_ATTRIBUTE_SOFTWARE;
+        seqinfo->flags = DISPLAY_ATTRIBUTE_DECODED;
 
         pctx->busstate = BUS_STATE_IDLE;
         seqinfo->group_values[2].value = pctx->lpc_data;
@@ -233,8 +239,9 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
                 if (ctrldiff & LCLK_N && ctrl & LCLK_N)
                         continue;
 
+
                 if (pctx->busstate != BUS_STATE_IDLE && pctx->busstate != BUS_STATE_START
-                    && (ctrldiff & LFRAME_N) && !(ctrl & LFRAME_N)) {
+                    && !(ctrl & LFRAME_N)) {
                         LogDebug(pctx, 8, "Abort cycle detected: %d\n", pctx->busstate);
                         pctx->busstate = BUS_STATE_ABORT;
                         pctx->clockcount = 0;
@@ -302,7 +309,7 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
                                 switch(pctx->lpc_start) {
                                 default:
                                 case LPC_TARGET:
-                                        pctx->busstate = pctx->lpc_cycletype & 1 ? BUS_STATE_DATA : BUS_STATE_TAR;
+                                        pctx->busstate = pctx->lpc_cycletype & 1 ? BUS_STATE_DATA_WRITE : BUS_STATE_TAR1;
                                         break;
                                 case LPC_FW_READ:
                                 case LPC_FW_WRITE:
@@ -339,11 +346,11 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
 
                         switch(pctx->lpc_start) {
                         case LPC_FW_READ:
-                                pctx->busstate = BUS_STATE_TAR;
+                                pctx->busstate = BUS_STATE_TAR1;
                                 break;
 
                         case LPC_FW_WRITE:
-                                pctx->busstate = BUS_STATE_DATA;
+                                pctx->busstate = BUS_STATE_DATA_WRITE;
                                 break;
                         default:
                                 pctx->busstate = BUS_STATE_IDLE;
@@ -351,32 +358,70 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
                         }
                         break;
 
-                case BUS_STATE_TAR:
+                case BUS_STATE_TAR1:
 
                         if (++pctx->clockcount == 2) {
                                 pctx->clockcount = 0;
-                                pctx->busstate = BUS_STATE_SYNC;
+                                pctx->busstate = BUS_STATE_SYNC1;
                         }
                         break;
 
-                case BUS_STATE_SYNC:
+
+                case BUS_STATE_TAR2:
+
+                        if (++pctx->clockcount == 2) {
+                                pctx->clockcount = 0;
+                                pctx->busstate = BUS_STATE_SYNC2;
+                        }
+                        break;
+
+                case BUS_STATE_TAR3:
+
+                        if (++pctx->clockcount == 2) {
+                                pctx->clockcount = 0;
+                                pctx->busstate = BUS_STATE_IDLE;
+                        }
+
+                        LogDebug(pctx, 8, "addr: %04X, data %04X\n", pctx->lpc_address, pctx->lpc_data);
+                        pctx->busstate = BUS_STATE_IDLE;
+                        return make_lpc_sequence(pctx);
+
+                        break;
+
+                case BUS_STATE_SYNC1:
 
                         if (!data) {
                                 pctx->clockcount = 0;
                                 pctx->lpc_data = 0;
-                                pctx->busstate = BUS_STATE_DATA;
+                                pctx->busstate = BUS_STATE_DATA_READ;
                         }
                         break;
 
-                case BUS_STATE_DATA:
+                case BUS_STATE_SYNC2:
+
+                        if (!data) {
+                                pctx->clockcount = 0;
+                                pctx->busstate = BUS_STATE_TAR3;
+                        }
+                        break;
+
+                case BUS_STATE_DATA_WRITE:
 
                         pctx->lpc_data |= (data & 0xf) << pctx->clockcount * 4;
 
                         if (++pctx->clockcount== 2) {
                                 pctx->clockcount = 0;
-                                LogDebug(pctx, 8, "BUS_STATE_DATA @%d addr: %04X, data %04X\n", seq, pctx->lpc_address, pctx->lpc_data);
-                                pctx->busstate = BUS_STATE_IDLE;
-                                return make_lpc_sequence(pctx);
+                                pctx->busstate = BUS_STATE_TAR2;
+                        }
+                        break;
+
+                case BUS_STATE_DATA_READ:
+
+                        pctx->lpc_data |= (data & 0xf) << pctx->clockcount * 4;
+
+                        if (++pctx->clockcount== 2) {
+                                pctx->busstate = BUS_STATE_TAR3;
+                                pctx->clockcount = 0;
                         }
                         break;
 
@@ -384,13 +429,13 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
                         if (++pctx->clockcount == 5) {
                                 seqinfo = make_lpc_sequence(pctx);
                                 seqinfo->next = get_sequence(pctx);
-                                seqinfo->next->flags = DISPLAY_ATTRIBUTE_CONTROL_FLOW;
+                                seqinfo->next->flags = DISPLAY_ATTRIBUTE_ABORTED;
+                                seqinfo->flags = DISPLAY_ATTRIBUTE_ABORTED;
                                 sprintf(seqinfo->next->text, "  *** Cycle aborted ***");
                                 pctx->busstate = BUS_STATE_IDLE;
                                 return seqinfo;
                         }
                         break;
-
                 default:
                         LogDebug(pctx, 9, "Illegal state @%d\n", seq);
                         break;
@@ -432,9 +477,9 @@ struct sequence *ParseSeq(struct pctx *pctx, int seq)
                 return seqinfo;
         }
 
-        if (pctx->func.LAInfo(pctx->lactx, TLA_INFO_DISPLAY_ATTRIBUTE, -1) == DISPLAY_ATTRIBUTE_HARDWARE) {
+        if (pctx->func.LAInfo(pctx->lactx, TLA_INFO_DISPLAY_ATTRIBUTE, -1) == DISPLAY_ATTRIBUTE_ALL) {
                 seqinfo = get_sequence(pctx);
-                seqinfo->flags = DISPLAY_ATTRIBUTE_HARDWARE;
+                seqinfo->flags = DISPLAY_ATTRIBUTE_ALL;
                 seqinfo->group_values[0].value = ctrl;
                 seqinfo->group_values[1].value = pctx->func.LAGroupValue(pctx->lactx, seq, 1);
                 seqinfo->group_values[0].mask = 0;
@@ -465,12 +510,7 @@ int ParseMarkGet(struct pctx *pctx, int seq)
 
 int ParseMarkMenu(struct pctx *pctx, int seq, char ***names, char **entries, char **val)
 {
-        static char *_entries[] = { "Testentry", "Testentry2", NULL };
-	LogDebug(pctx, 8, "%s: sequence %d\n", __FUNCTION__, seq);
-        *names = _entries;
-        *entries = "Test";
-        *val = "Test";
-	return 2;
+        return 0;
 }
 
 int ParseInfo(struct pctx *pctx, unsigned int request)
@@ -591,6 +631,5 @@ int ParseDisasmReinit(struct pctx *pctx, int request)
         struct seqlog *seqlog;
 
 	LogDebug(pctx, 8, "%s(%p, %d)\n", __FUNCTION__, pctx, request);
-        LogDebug(pctx, 8, "cache size %d\n", pctx->func.LAInfo(pctx->lactx, 3, -1));
         return 1;
 }
