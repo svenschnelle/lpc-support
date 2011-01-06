@@ -87,12 +87,10 @@ struct groupinfo groupinfo[] = { { .groupname = "CTRL", .width = 9, .field_16 = 
 
 struct businfo businfo[] = { { .groupcount = ARRAY_SIZE(groupinfo) } };
 
-char *onoff[] = { "On", "Off", NULL, NULL };
+char *onoff[] = { "Off", "On", NULL, NULL };
 
-struct modeinfo modeinfo[] = { /*{ "Show unknown cycles", onoff, 1, 0 },
-                               { "Show all cycles", onoff, 1, 0 },
-                               { "Testmenu3", onoff, 1, 0 },
-                               { "Testmenu4", onoff, 1, 0 }*/ };
+struct modeinfo modeinfo[] = { { "Show unknown cycles", onoff, 1, 0 },
+                               { "Show aborted cycles", onoff, 2, 0 } };
 
 struct stringmodevalues stringmodevalues[] = { { "All cycles", DISPLAY_ATTRIBUTE_ALL },
                                                 { "Decoded cycles", DISPLAY_ATTRIBUTE_DECODED },
@@ -276,9 +274,14 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
                         case LPC_ABORT:
                                 return NULL;
                         default:
-                                LogDebug(pctx, 6, "Unknown cycle type %d\n", pctx->lpc_start);
+                                if (!pctx->show_unknown_cycles)
+                                        return NULL;
+
                                 pctx->busstate = BUS_STATE_IDLE;
-                                break;
+                                seqinfo = get_sequence(pctx);
+                                sprintf(seqinfo->text, "Unknown cycle %d", pctx->lpc_start);
+                                seqinfo->flags = DISPLAY_ATTRIBUTE_ABORTED;
+                                return seqinfo;
                         };
                         break;
 
@@ -427,6 +430,8 @@ static struct sequence *parse_lpc(struct pctx *pctx, int startseq)
 
                 case BUS_STATE_ABORT:
                         if (++pctx->clockcount == 5) {
+                                if (!pctx->show_aborted_cycles)
+                                        return NULL;
                                 seqinfo = make_lpc_sequence(pctx);
                                 seqinfo->next = get_sequence(pctx);
                                 seqinfo->next->flags = DISPLAY_ATTRIBUTE_ABORTED;
@@ -586,15 +591,34 @@ struct modeinfo *ParseModeInfo(struct pctx *pctx, uint16_t mode)
 int ParseModeGetPut(struct pctx *pctx, int16_t mode, int value, int request)
 {
         int firstseq, lastseq;
-        if (mode < 0 || mode > (signed)ARRAY_SIZE(modeinfo)) {
-                LogDebug(pctx, 8, "%s: mode=%d request=%d value=%s (%d))\n", __FUNCTION__,
-                         mode, request, stringmodevalues[value-1].name, value);
-        } else {
-                LogDebug(pctx, 8, "%s: %d (%s), %d (%s)\n", __FUNCTION__,
+        if (mode >= 0) {
+                LogDebug(pctx, 5, "%s: %d (%s), %d (%s)\n", __FUNCTION__,
                          request, modeinfo[mode].name, value, onoff[value]);
+
                 firstseq = pctx->func.LAInfo(pctx->lactx, TLA_INFO_FIRST_SEQUENCE, -1);
                 lastseq = pctx->func.LAInfo(pctx->lactx, TLA_INFO_LAST_SEQUENCE, -1);
                 pctx->func.LAInvalidate(pctx->lactx, -1, firstseq, lastseq);
+
+                switch(mode) {
+                case 0:
+                        if (request == 1)
+                                return 1;
+
+                        if (request == 2)
+                                pctx->show_unknown_cycles = value;
+                        value = pctx->show_unknown_cycles;
+                        break;
+                case 1:
+                        if (request == 1)
+                                return 1;
+
+                        if (request == 2)
+                                pctx->show_aborted_cycles = value;
+                        value = pctx->show_aborted_cycles;
+                        break;
+                default:
+                        break;
+                }
         }
 	return value;
 }

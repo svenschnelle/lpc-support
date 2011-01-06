@@ -179,6 +179,8 @@ struct pctx {
 	struct lactx *lactx;
 	struct lafunc func;
 
+        int show_aborted_cycles;
+        int show_unknown_cycles;
         bus_state_t busstate;
 
         int clockcount;
