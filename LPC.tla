@@ -329,139 +329,156 @@ CapRoot "Root" "$$" {
 			RDAInternalOpMarkSet "RDAOpMarkSet" "$$" {
 			}
 		}
-		CjmClock "jmClk" "$$" {
-			CafcByteCell "jmClkMode" "$$" = { 1  }
-			CjmAsyncClock "jmAsyncClock" "$$" {
-				CafcLongLongCell "jmClkIntRate" "$$" = { 1000  }
-			}
-			CafcCompositeCell "jmSyncClock" "$$" {
-				CafcByteCell "jmSyncClockType" "$$" = { 1  }
-				CafcCompositeCell "jmSingleSyncClock" "$$" {
-					CafcLongLongCell "jmSUTClockRate" "$$" = { 33000000  }
-					CafcLongLongCell "jmMaxDataRate" "$$" = { 450000000  }
-					CafcStringCell "jmClockChanName" "$$" = { "CK1()"  }
-					CjmExternalPresets "jmSingleClockPresets" "$$" {
-						CjmUIChannelPresets "jmClkExtChannelPresets" "$$" {
-						}
-						CafcLongLongCell "jmDefaultSetup1" "$$" = { 0  }
-						CafcLongLongCell "jmDefaultHold1" "$$" = { 625  }
-						CafcLongLongCell "jmDefaultSetup3" "$$" = { 0  }
-						CafcLongLongCell "jmDefaultHold3" "$$" = { 625  }
-					}
-					CjmSingleSyncSamplePts "jmSingleSyncSamplePts" "$$" {
-						CafcByteCell "jmSamplePointsStateCell" "$$" = { 0  }
-					}
-				}
-				CafcCompositeCell "jmComplexSyncClock" "$$" {
-					CjmClockDefinition "jmClkGPSyncAdv1Clk" "$$" {
-						CafcArrayCell "jmClkGPSyncDef" "$$" {
-							CafcArrayCell "" "$$" {
-								CafcByteCell "CK1()" "$$" = { 0  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-							CafcArrayCell "" "$$" {
-								CafcByteCell "CK1()" "$$" = { 1  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-							CafcArrayCell "" "$$" {
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-							CafcArrayCell "" "$$" {
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-						}
-					}
-					CjmClockDefinition "jmClkGPSyncAdv2Clk" "$$" {
-						CafcArrayCell "jmClkGPSyncDef" "$$" {
-							CafcArrayCell "" "$$" {
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-							CafcArrayCell "" "$$" {
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-							CafcArrayCell "" "$$" {
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-							CafcArrayCell "" "$$" {
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-								CafcByteCell "" "$$" = { 4  }
-							}
-						}
-					}
-					CafcByteCell "jmMasterSamplerEdgeType" "$$" = { 5  }
-					CafcByteCell "jmSecondarySamplerEdgeType" "$$" = { 9  }
-					CjmExternalPresets "jmComplexClockPresets" "$$" {
-						CafcLongLongCell "jmClkMaxSyncSpeed" "$$" = { 120000000  }
-						CafcLongCell "jmClkDefHold" "$$" = { 0  }
-						CjmUIChannelPresets "jmClkExtChannelPresets" "$$" {
-						}
-					}
-					CafcArrayCell "jmComplexSyncSamplePts" "$$" {
-						CafcByteCell "jmSamplePointsStateCell" "$$" = { 0  }
-					}
-					CafcLongLongCell "jmSUTClockRate" "$$" = { 59900000  }
-					CafcLongLongCell "jmMaxDataRate" "$$" = { 60000000  }
-				}
-				CafcByteCell "jmLastSyncClockType" "$$" = { 1  }
-			}
-			CjmCustomClock "jmCustomClock" "$$" {
-				CjmCustomOptions "jmClkCustOpts" "$$" {
-					CafcStringCell "jmClkCustOptsFile" "$$" = { ""  }
-					CafcArrayCell "jmClkCustOptsSels" "$$" {
-					}
-					CafcLongLongCell "jmClkSampleRate" "$$" = { 0  }
-				}
-				CjmCustomPresets "jmClkSetupHoldGroups" "$$" {
-					CafcLongLongCell "jmClkMaxSyncSpeed" "$$" = { -1  }
-					CafcByteCell "jmClkStatusBitType" "$$" = { 3  }
-					CjmBanjoCustomChannelPresets "jmClkSHChannelPresets" "$$" {
-					}
-				}
-				CafcLongLongCell "jmClkCustMaxClockRate" "$$" = { 450000000  }
-			}
-			CjmStatusTypeManager "jmClkStatusTypeManager" "$$" {
-				CafcByteCell "JmSBMStatusTypeSaveRestore" "$$" = { 3  }
-			}
-			CjmAutoDeskew "JmAutoDeskew" "$$" {
-				CafcLongLongCell "jmAutoDeskewRangeSetupTicks" "$$" = { 64  }
-				CafcLongLongCell "jmAutoDeskewRangeHoldTicks" "$$" = { 64  }
-				CafcLongLongCell "jmAutoDeskewQuality" "$$" = { 1000  }
-				CafcLongLongCell "jmAutoDeskewMinQuality" "$$" = { 1000  }
-				CafcLongLongCell "jmAutoDeskewMaxQuality" "$$" = { 25000000  }
-				CafcStringCell "jmAutoDeskewConfigName" "$$" = { ""  }
-				CafcStringCell "jmAutoDeskewSetupName" "$$" = { ""  }
-				CafcByteCell "jmAutoDeskewClockMode" "$$" = { 1  }
-			}
-		}
+
+         CjmClock "jmClk" "$$" { 
+             CafcByteCell "jmClkMode" "$$" = { 2  0 255 }
+             CafcLongLongCell "jmClkIntRate" "$$" = { 4000 4000 50000000000 1 AFC_FIXED_INCR  }
+             CjmExternalClock "jmClkGPSyncClk" "$$" { 
+                 CafcByteCell "jmClkGPSyncClkMode" "$$" = { 0  0 255 }
+                 CjmClockDefinition "jmClkGPSyncBasicClk" "$$" { 
+                     CafcArrayCell "jmClkGPSyncDef" "$$" { 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "CK1" "$$" = { 0  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                     } 
+                 } 
+                 CjmClockDefinition "jmClkGPSyncAdv1Clk" "$$" { 
+                     CafcArrayCell "jmClkGPSyncDef" "$$" { 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "CK1" "$$" = { 0  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                     } 
+                 } 
+                 CjmClockDefinition "jmClkGPSyncAdv2Clk" "$$" { 
+                     CafcArrayCell "jmClkGPSyncDef" "$$" { 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                         CafcArrayCell "" "$$" { 
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                             CafcByteCell "" "$$" = { 4  0 255 }
+                         } 
+                     } 
+                 } 
+                 CjmExternalPresets "jmClkGPBasicPresets" "$$" { 
+                     CafcLongCell "jmClkDefHold" "$$" = { 0  }
+                     CafcLongCell "jmClkDefLogin" "$$" = { 1  }
+                     CafcLongLongCell "jmClkDefAlignment" "$$" = { 2000 -7000 8500 500 AFC_FIXED_INCR  }
+                     CafcBooleanCell "jmClkGrpDemux" "$$" = { FALSE  }
+                     CafcArrayCell "jmClkGrpPresets" "$$" { 
+                         CjmGroupPreset "" "$CTRL$" { 
+                             CafcStringCell "UserName" "$$" = { "CTRL"  }
+                             CafcLongCell "jmClkGrpHold" "$$" = { 0  }
+                             CafcBooleanCell "jmClkDefHold" "$$" = { TRUE  }
+                             CafcLongCell "jmClkGrpLogin" "$$" = { 1  }
+                             CafcBooleanCell "jmClkDefLogin" "$$" = { TRUE  }
+                             CafcLongLongCell "jmClkGrpAlignment" "$$" = { 2000 -7000 8500 500 AFC_FIXED_INCR  }
+                             CafcBooleanCell "jmClkDefAlignment" "$$" = { TRUE  }
+                         } 
+                         CjmGroupPreset "" "$DATA$" { 
+                             CafcStringCell "UserName" "$$" = { "DATA"  }
+                             CafcLongCell "jmClkGrpHold" "$$" = { 0  }
+                             CafcBooleanCell "jmClkDefHold" "$$" = { TRUE  }
+                             CafcLongCell "jmClkGrpLogin" "$$" = { 1  }
+                             CafcBooleanCell "jmClkDefLogin" "$$" = { TRUE  }
+                             CafcLongLongCell "jmClkGrpAlignment" "$$" = { 2000 -7000 8500 500 AFC_FIXED_INCR  }
+                             CafcBooleanCell "jmClkDefAlignment" "$$" = { TRUE  }
+                         } 
+                     } 
+                 } 
+                 CjmExternalPresets "jmClkGPAdvPresets" "$$" { 
+                     CafcLongCell "jmClkDefHold" "$$" = { 0  }
+                     CafcLongCell "jmClkDefLogin" "$$" = { 1  }
+                     CafcLongLongCell "jmClkDefAlignment" "$$" = { 2000 -7000 8500 500 AFC_FIXED_INCR  }
+                     CafcBooleanCell "jmClkGrpDemux" "$$" = { FALSE  }
+                     CafcArrayCell "jmClkGrpPresets" "$$" { 
+                         CjmGroupPreset "" "$CTRL$" { 
+                             CafcStringCell "UserName" "$$" = { "CTRL"  }
+                             CafcLongCell "jmClkGrpHold" "$$" = { 0  }
+                             CafcBooleanCell "jmClkDefHold" "$$" = { TRUE  }
+                             CafcLongCell "jmClkGrpLogin" "$$" = { 1  }
+                             CafcBooleanCell "jmClkDefLogin" "$$" = { TRUE  }
+                             CafcLongLongCell "jmClkGrpAlignment" "$$" = { 2000 -7000 8500 500 AFC_FIXED_INCR  }
+                             CafcBooleanCell "jmClkDefAlignment" "$$" = { TRUE  }
+                         } 
+                         CjmGroupPreset "" "$DATA$" { 
+                             CafcStringCell "UserName" "$$" = { "DATA"  }
+                             CafcLongCell "jmClkGrpHold" "$$" = { 0  }
+                             CafcBooleanCell "jmClkDefHold" "$$" = { TRUE  }
+                             CafcLongCell "jmClkGrpLogin" "$$" = { 1  }
+                             CafcBooleanCell "jmClkDefLogin" "$$" = { TRUE  }
+                             CafcLongLongCell "jmClkGrpAlignment" "$$" = { 2000 -7000 8500 500 AFC_FIXED_INCR  }
+                             CafcBooleanCell "jmClkDefAlignment" "$$" = { TRUE  }
+                         } 
+                     } 
+                 } 
+             } 
+             CjmCustomOptions "jmClkCustOpts" "$$" { 
+                 CafcStringCell "jmClkCustOptsFile" "$$" = { "LPC_T.cop"  }
+                 CafcArrayCell "jmClkCustOptsSels" "$$" { 
+                 } 
+             } 
+         }
+
 		CjmTriggerInfo "jmTriggerInfo" "$$" {
 			CjmTrigger "jmTriggerAsyncSync" "$$" {
 				CcmSymbolFileLinks "SymbolFileLinks" "$$" {

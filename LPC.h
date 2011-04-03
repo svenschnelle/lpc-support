@@ -16,7 +16,6 @@ enum TLA_INFO {
 
 const char *busstates[] = {
         "BUS_STATE_START",
-        "BUS_STATE_IDLE",
         "BUS_STATE_IDSEL",
         "BUS_STATE_CT_DIR",
         "BUS_STATE_ADDR",
@@ -32,9 +31,81 @@ const char *busstates[] = {
         "BUS_STATE_ABORT",
 };
 
+#define ARRAY_SIZE(_x) (sizeof(_x)/sizeof(_x[0]))
+
+typedef enum {
+        LSMI_N = 0x01,
+        LPCPD_N = 0x02,
+        LPME_N = 0x04,
+        CLKRUN_N = 0x08,
+        SERIRQ = 0x10,
+        LDRQ_N = 0x20,
+        LFRAME_N = 0x40,
+        LRESET_N = 0x80,
+        LCLK_N = 0x100,
+} ctrl_signal_t;
+
+typedef enum {
+        CYCLE_UNKNOWN=0,
+        CYCLE_IO_READ,
+        CYCLE_IO_WRITE,
+        CYCLE_MEM_READ,
+        CYCLE_MEM_WRITE,
+        CYCLE_FW_READ,
+        CYCLE_FW_WRITE,
+} cycle_type_t;
+
+typedef enum {
+        DISPLAY_ATTRIBUTE_ALL=1,
+        DISPLAY_ATTRIBUTE_DECODED,
+        DISPLAY_ATTRIBUTE_HIGHLEVEL,
+        DISPLAY_ATTRIBUTE_ABORTED,
+} display_attribute_t;
+
+typedef enum {
+        LPC_IO_READ,
+        LPC_IO_WRITE,
+        LPC_MEM_READ,
+        LPC_MEM_WRITE,
+        LPC_DMA_READ,
+        LPC_DMA_WRITE,
+} lpc_cycletype_t;
+
+typedef enum {
+        EC_READ=0x80,
+        EC_WRITE=0x81,
+        EC_QUERY=0x84,
+} acpi_op_t;
+
+typedef enum {
+        ACPI_CMD,
+        ACPI_ADDR,
+        ACPI_DATA,
+} acpi_state_t;
+
+struct acpi_ctx {
+        int data;
+        int addr;
+        int haveop:1;
+        int haveaddr:1;
+        acpi_op_t op;
+        acpi_state_t state;
+};
+
+struct superio_ctx {
+        int data;
+        int addr;
+        int haveaddr:1;
+};
+
+struct pmh7_ctx {
+        int data;
+        int addr;
+        int haveaddr:1;
+};
+
 typedef enum {
         BUS_STATE_START,
-        BUS_STATE_IDLE,
         BUS_STATE_IDSEL,
         BUS_STATE_CT_DIR,
         BUS_STATE_ADDR,
@@ -58,6 +129,12 @@ typedef enum {
         LPC_FW_WRITE=0xe,
         LPC_ABORT=0xf
 } lpc_start_t;
+
+typedef enum {
+        LPC_SUBHANDLER_IGNORE,
+        LPC_SUBHANDLER_MORE_DATA_NEEDED,
+        LPC_SUBHANDLER_FINISH,
+} lpc_subhandler_state_t;
 
 struct lactx;
 struct businfo {
@@ -185,16 +262,17 @@ struct pctx {
 
         int clockcount;
 
-        int lpc_cycletype;
+        lpc_cycletype_t lpc_cycletype;
         lpc_start_t lpc_start;
         int lpc_addrwidth;
         int lpc_datawidth;
 
         int lastdata;
 
-        int lpc_address;
-        int lpc_data;
+        unsigned int lpc_address;
+        unsigned int lpc_data;
         int lpc_idsel;
+        int displayattribute;
 };
 
 struct groupinfo {
@@ -228,6 +306,14 @@ typedef enum {
         GROUP_TYPE_MNEMONIC = 2,
         GROUP_TYPE_FAKE_GROUP = 3,
 } group_type_t;
+
+struct lpc_subdecoder {
+        unsigned int address;
+        lpc_start_t start;
+        lpc_cycletype_t cycle;
+        void *ctx;
+        lpc_subhandler_state_t  (*cb)(struct pctx *, void *, struct sequence **);
+};
 
 
 __declspec(dllexport) struct pctx *ParseReinit(struct pctx *pctx, struct lactx *lactx, struct lafunc *func);

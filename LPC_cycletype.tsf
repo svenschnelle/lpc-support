@@ -4,3 +4,6 @@ IO_Write 00000001 @red
 FW_Read  00001101 @green
 FW_Write 00001110 @red
 Abort    00001111 @white @red
+ACPI     00010000
+PMH7     00010001
+SUPERIO  00010010
