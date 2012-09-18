@@ -472,11 +472,6 @@ CapRoot "Root" "$$" {
                      } 
                  } 
              } 
-             CjmCustomOptions "jmClkCustOpts" "$$" { 
-                 CafcStringCell "jmClkCustOptsFile" "$$" = { "LPC_T.cop"  }
-                 CafcArrayCell "jmClkCustOptsSels" "$$" { 
-                 } 
-             } 
          }
 
 		CjmTriggerInfo "jmTriggerInfo" "$$" {
