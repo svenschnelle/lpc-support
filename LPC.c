@@ -47,15 +47,17 @@ static const char *lpc_cycletypes[8] = {
         "Reserved",
         "Reserved"
 };
+	
+struct groupinfo groupinfo[] = {
+	GROUP("CTRL", GROUP_TYPE_INPUT, 9, 0, NULL),
+	GROUP("DATA", GROUP_TYPE_INPUT, 4, 0, NULL),
+	GROUP("Decoded Data", GROUP_TYPE_FAKE_GROUP, 32, 8, NULL),
+	GROUP("Decoded Address", GROUP_TYPE_FAKE_GROUP, 32, 16, NULL),
+	GROUP("Decoded CycleType", GROUP_TYPE_FAKE_GROUP, 32, 32, "LPC_cycletype.tsf"),
+	GROUP("Cycle Type", GROUP_TYPE_MNEMONIC, 0x11b, SEQUENCE_TEXT_WIDTH, NULL),
+};
 
-struct groupinfo groupinfo[] = { { .groupname = "CTRL", .width = 9, .field_16 = -1 },
-                                 { .groupname = "DATA", .width = 4, .field_16 = -1 },
-                                 { .groupname = "Decoded Data", .grouptype = GROUP_TYPE_FAKE_GROUP, .width = 32, .field_16 = -1 },
-                                 { .groupname = "Decoded Address", .grouptype = GROUP_TYPE_FAKE_GROUP, .width = 32, .field_16 = -1 },
-                                 { .groupname = "Decoded CycleType", .grouptype = GROUP_TYPE_FAKE_GROUP, .width = 8, .field_16 = -1, .default_symbolfile="LPC_cycletype.tsf"  },
-                                 { .groupname = "Cycle Type" , .grouptype = GROUP_TYPE_MNEMONIC, .field_7 = 1, .width = SEQUENCE_TEXT_WIDTH, .field_16 = -1  }};
-
-struct businfo businfo[] = { { .groupcount = ARRAY_SIZE(groupinfo) } };
+struct businfo businfo[] = { { .groupcount = ARRAY_SIZE(groupinfo)  } };
 
 char *onoff[] = { "Off", "On", NULL, NULL };
 
@@ -341,12 +343,12 @@ static void LogDebug(struct pctx *pctx, int level, const char *fmt, ...)
         char buf[4096];
 
         if (!logfile)
-                logfile = fopen("c:\\tlatrace.txt", "w+");
+                logfile = fopen("c:\\Users\\svens\\tlatrace.txt", "w+");
 
         if (!logfile)
                 return;
 
-        if (level >= 6)
+        if (level >= 10)
                 return;
 
 	va_list ap;
@@ -977,7 +979,9 @@ static const char *handler_state_to_string(lpc_subhandler_state_t state)
                 return "LPC_SUBHANDLER_FINISH";
 
         }
+	return NULL;
 }
+
 static lpc_subhandler_state_t call_handler(struct pctx *pctx, int seq, struct sequence **seqinfo)
 {
         struct lpc_subdecoder *d;
